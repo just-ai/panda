@@ -1,0 +1,17 @@
+commands:
+  script: control.sh
+
+configMap:
+
+  - source: docker-compose.yml
+    target: /opt/monitoring-node-exporter/docker-compose.yml
+    mkdirs: true  
+
+  - source: inside.sh
+    target: /opt/monitoring-node-exporter/inside.sh
+  - source: kill.sh
+    target: /opt/monitoring-node-exporter/kill.sh
+  - source: restart.sh
+    target: /opt/monitoring-node-exporter/restart.sh
+  - source: start.sh
+    target: /opt/monitoring-node-exporter/start.sh

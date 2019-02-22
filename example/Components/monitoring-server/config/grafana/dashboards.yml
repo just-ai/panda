@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+- name: 'default'
+  orgId: 1
+  folder: 'provision'
+  type: file
+  disableDeletion: true
+  updateIntervalSeconds: 10 #how often Grafana will scan for changed dashboards
+  options:
+    path: /etc/grafana_dashboards

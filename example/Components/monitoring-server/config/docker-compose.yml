@@ -1,0 +1,38 @@
+version: '3.5'
+
+networks:
+  prometheus_net:
+    name: prometheus_net
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.5.0
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - ./prometheus_data:/prometheus_data
+    command:
+      - '--storage.tsdb.retention=15d'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus_data'
+      - '--web.enable-lifecycle'
+      - '--web.external-url=http://${props.prometheusServerName}'
+# promtool check config prompath
+    ports:
+      - 1220:9090
+    networks:
+      - prometheus_net
+    restart: always
+
+  grafana:
+    image: grafana/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - 1230:3000
+    volumes:
+      - ./grafana_data:/var/lib/grafana
+      - ./grafana:/etc/grafana/
+      - ./grafana_dashboards:/etc/grafana_dashboards
+    networks:
+      - prometheus_net
+    restart: always

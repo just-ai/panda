@@ -1,0 +1,115 @@
+package com.justai.caila.utils;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.justai.accountsadmin.AccountsAdminClient;
+import com.justai.accountsadmin.config.AccountsAdminClientConfig;
+import com.justai.accountsadmin.core.roles.dao.Role;
+import com.justai.caila.users.dao.Account;
+import com.justai.caila.users.dao.Permission;
+import com.justai.caila.users.dao.User;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor(onConstructor = @__({@Autowired}))
+public class AAClientWrapper {
+    private final AccountsAdminClient client;
+    private final AccountsAdminClientConfig config;
+
+    public User register(String login,
+                         String password,
+                         String firstName,
+                         String lastName,
+                         String accountShortName,
+                         List<String> roleNames) {
+        return buildUser(
+                client.register(
+                        login,
+                        password,
+                        firstName,
+                        lastName,
+                        accountShortName,
+                        config.getProductName(),
+                        roleNames));
+    }
+
+    public Authentication auth(String email, String password) {
+        JsonNode authNode = client.auth(email, password, config.getProductName());
+        List<GrantedAuthority> roles = new ArrayList<>();
+        if (authNode.get("authorities") != null) {
+            if (authNode.get("authorities").isArray()) {
+                ArrayNode arrayNode = (ArrayNode) authNode.get("authorities");
+                for (JsonNode node : arrayNode) {
+                    roles.add(new SimpleGrantedAuthority(node.get("authority").asText()));
+                }
+            }
+        }
+        if (authNode.get("authenticated") != null && authNode.get("authenticated").asBoolean() == true) {
+            return new UsernamePasswordAuthenticationToken(email, password, roles);
+        }
+        return null;
+    }
+
+    public List<Permission> getPermissions(String email) {
+        List<Permission> permissions = new ArrayList<>();
+        List<com.justai.accountsadmin.core.permissions.dao.Permission.Dto.Read> permissionDtos = client.getPermissions(email, config.getProductName());
+        permissionDtos.forEach(p -> {
+            Permission permission = new Permission();
+            permission.setId(p.getId());
+            permission.setName(p.getName());
+            permission.setInternal(p.isInternal());
+            permissions.add(permission);
+        });
+        return permissions;
+    }
+
+    public User getUser(String email) {
+        com.justai.accountsadmin.core.users.dao.User.Dto.SimpleWithAccounts dto = client.getUserInfo(email, config.getProductName());
+        return buildUser(dto);
+    }
+
+    public User getUser(Long userId) {
+        com.justai.accountsadmin.core.users.dao.User.Dto.SimpleWithAccounts dto = client.getUserInfo(userId, config.getProductName());
+        return buildUser(dto);
+    }
+
+    private User buildUser(com.justai.accountsadmin.core.users.dao.User.Dto.SimpleWithAccounts dto) {
+        User user = new User();
+        user.setId(dto.getId());
+        user.setEmail(dto.getLogin());
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        com.justai.accountsadmin.core.accounts.dao.Account.Dto.Simple accountDto = dto.getAccounts().get(0);
+        Account account = new Account();
+        account.setId(accountDto.getId());
+        account.setShortName(accountDto.getShortName());
+        user.setAccountId(account.getId());
+        if (dto.getRoles() != null) {
+            user.setRoles(
+                    dto.getRoles().stream()
+                            .map(Role.Dto.Simple::getName)
+                            .collect(Collectors.toList()));
+        }
+        if (dto.getRoles() != null) {
+//            user.setPermissions(dto.getRoles().stream()
+//                    .map(Role.Dto.Read::getPermissions)
+//                    .flatMap(Collection::stream)
+//                    .map(com.justai.accountsadmin.core.permissions.dao.Permission.Dto.Simple::getName)
+//                            .collect(Collectors.toList()));
+        }
+        return user;
+    }
+
+
+}

@@ -1,0 +1,19 @@
+props:
+  enableMainAccessLog: false
+
+commands:
+  script: control.sh
+
+configMap:
+  - source: nginx.conf
+    target: /etc/nginx/nginx.conf
+    mkdirs: true
+
+  - source: conf
+    target: /etc/nginx/conf.d
+    directory: true
+    optional: true
+
+  - source: default.conf
+    target: /etc/nginx/conf.d/default.conf
+

@@ -1,0 +1,41 @@
+props:
+  monitoringAdminUser: mon-admin
+  monitoringAdminPassword: mon-admin
+
+
+
+commands:
+  script: control.sh
+
+configMap:
+
+  - source: docker-compose.yml
+    target: /opt/monitoring-server/docker-compose.yml
+    mkdirs: true  
+
+  - source: inside.sh
+    target: /opt/monitoring-server/inside.sh
+  - source: kill.sh
+    target: /opt/monitoring-server/kill.sh
+  - source: restart.sh
+    target: /opt/monitoring-server/restart.sh
+  - source: start.sh
+    target: /opt/monitoring-server/start.sh
+
+
+  - source: prometheus
+    target: /opt/monitoring-server/prometheus
+    directory: true
+  - source: grafana
+    target: /opt/monitoring-server/grafana
+    directory: true
+  - source: grafana/datasource.yml
+    target: /opt/monitoring-server/grafana/provisioning/datasources/datasource.yml
+    mkdirs: true
+  - source: grafana/dashboards.yml
+    target: /opt/monitoring-server/grafana/provisioning/dashboards/dashboards.yml
+    mkdirs: true
+  - source: grafana_dashboards
+    target: /opt/monitoring-server/grafana_dashboards
+    directory: true
+

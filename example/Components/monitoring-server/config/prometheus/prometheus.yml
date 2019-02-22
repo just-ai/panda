@@ -1,0 +1,43 @@
+# my global config
+global:
+  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+#  scrape_timeout:      20s # Set the scrape timeout to 20 seconds. Default is 10 seconds.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  - '/etc/prometheus/*.alerts.yml'
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+
+  - job_name: 'prometheus'
+    scrape_interval: 30s
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+        - 'localhost:9090'
+        labels: 
+          instance: 'prometheus:9090'
+
+  - job_name: 'node'
+    scrape_interval: 30s
+    static_configs:
+<#list env.hosts as host>
+<#if host.name != components.mon\-server.host>
+      - targets:
+        - '${host.fqdn}:1210'
+        labels:
+          instance: '${host.name}'
+<#else>
+      - targets:
+        - 'node-exporter:9100'
+        labels:
+          instance: '${host.name}'
+</#if>
+</#list>
