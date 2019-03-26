@@ -116,7 +116,7 @@ public abstract class BaseAction {
     protected void executeRemoteCommand(Cmp cmp, String command) {
         // write props and arguments
         FileHelper source = cmp.getZRenderFolder().child("scripts").child("arguments.sh");
-        FileHelper target = new FileHelper("cm/" + cmp.getId() + "/scripts/arguments.sh");
+        FileHelper target = new FileHelper(".cm/" + cmp.getId() + "/scripts/arguments.sh");
 
         writeSettings(source);
         sshManager.doWithConnection(cmp.getZHost(), ssh -> {
