@@ -129,11 +129,17 @@ public abstract class BaseAction {
             Commands cmd = cmp.getZComponent().getCommands();
             String remoteFolder = ".cm/" + cmp.getId() + "/scripts/";
 
+            String sudoCmd;
+            if (settings.sudo_with_pass) {
+                sudoCmd = "echo " + settings.ssh_pass + " | sudo -Sp ''";
+            } else {
+                sudoCmd = "sudo";
+            }
             // TODO: pass noStart argument
             if (cmd.getCommands().get(command) != null) {
-                ssh.exec("sudo " + remoteFolder + cmd.getCommands().get(command).getCmd());
+                ssh.exec(sudoCmd + " " + remoteFolder + cmd.getCommands().get(command).getCmd());
             } else {
-                ssh.exec("sudo " + remoteFolder + cmd.getScript() + " " + command);
+                ssh.exec(sudoCmd + " " + remoteFolder + cmd.getScript() + " " + command);
             }
         });
 
