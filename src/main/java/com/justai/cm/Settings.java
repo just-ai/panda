@@ -111,7 +111,7 @@ public class Settings {
         File[] locations = new File[] {
                 new File(PANDA_HOME + "/conf/panda.properties"), // default props
                 new File(System.getProperty("user.home") + "/.panda.properties"), // user props
-                new File(PANDA_HOME + "/panda.properties"), // project props
+                new File("panda.properties"), // project props
                 new File("local.properties") // local props for project
         };
 
