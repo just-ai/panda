@@ -45,7 +45,7 @@ public class CLI {
         Settings settings = parseSettings(commandLine);
         Encryptor.init(settings);
 
-        SshManager sshManager = new SshManager(settings.ssh_user, settings.ssh_pass, settings.noChange);
+        SshManager sshManager = new SshManager(settings.ssh_user, settings.ssh_pass, settings.ssh_key_path, settings.noChange);
         Components components = Components.load(settings.config_folder + "/Components");
         Env env = EnvLoader.load(settings.config_folder + "/" + settings.env, components);
 
