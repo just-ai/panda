@@ -12,15 +12,18 @@ public class SshManager {
 
     private final String user;
     private final String password;
+    private String sshKeyPath;
     private final boolean noChange;
     private final HashMap<String, SshConnection> connections;
 
     public SshManager(
             String user,
             String password,
+            String sshKeyPath,
             boolean noChange) {
         this.user = user;
         this.password = password;
+        this.sshKeyPath = sshKeyPath;
         this.noChange = noChange;
         connections = new HashMap<>();
     }
@@ -49,7 +52,7 @@ public class SshManager {
     private synchronized SshConnection getOrCreateConnection(Host host) {
         SshConnection cn = connections.get(host.getFqdn());
         if (cn == null) {
-            cn = new SshConnection(host.getFqdn(), Integer.parseInt(host.getSshPort()), user, password, noChange);
+            cn = new SshConnection(host.getFqdn(), Integer.parseInt(host.getSshPort()), user, password, sshKeyPath, noChange);
             connections.put(host.getFqdn(), cn);
         }
         return cn;
