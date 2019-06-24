@@ -27,8 +27,8 @@ public class Diff extends BaseAction {
          FileHelper source = renderFolder.child("config").child(map.getSource());
          FileHelper target = pullFolder.child(map.getSource());
 
-         List<String> targetLines = target.file.exists() ? target.readLines() : Collections.emptyList();
-         List<String> sourceLines = source.file.exists() ? source.readLines() : Collections.emptyList();
+         List<String> targetLines = target.file.isFile() ? target.readLines() : Collections.emptyList();
+         List<String> sourceLines = source.file.isFile() ? source.readLines() : Collections.emptyList();
 
          List<Delta<String>> deltas = DiffUtils.diff(targetLines, sourceLines).getDeltas();
          if (deltas.isEmpty())
