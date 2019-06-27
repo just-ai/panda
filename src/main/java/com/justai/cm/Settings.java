@@ -29,6 +29,7 @@ public class Settings {
     public static final Option CONFIG_FOLDER = new Option("config_folder", true, "Folder with configuration files");
     public static final Option USERNAME = new Option("ssh_user", true, "Username for remote ssh user");
     public static final Option PASSWORD = new Option("ssh_pass", true, "Password for remote ssh user");
+    public static final Option SUDO_WITH_PASS = new Option("sudo_with_pass", false, "Pass password for sudo");
     public static final Option SSH_KEY_PATH = new Option("ssh_key_path", true, "Path to ssh private key");
     public static final Option MASTER_PASSWORD = new Option("master_pass", true, "Password to decrypt secret properties");
     public static final Option MASTER_KEY = new Option("master_key", true, "Key file to decrypt secret properties");
@@ -50,6 +51,7 @@ public class Settings {
 
         options.addOption(Settings.USERNAME);
         options.addOption(Settings.PASSWORD);
+        options.addOption(Settings.SUDO_WITH_PASS);
 
         options.addOption(Settings.MASTER_PASSWORD);
         options.addOption(Settings.MASTER_KEY);
@@ -72,6 +74,7 @@ public class Settings {
 
     public final String ssh_user;
     public final String ssh_pass;
+    public final boolean sudo_with_pass;
     public final String ssh_key_path;
     public final boolean verbose;
 
@@ -97,6 +100,7 @@ public class Settings {
 
         this.ssh_user = properties.get(USERNAME.getOpt());
         this.ssh_pass = properties.get(PASSWORD.getOpt());
+        this.sudo_with_pass = properties.containsKey(SUDO_WITH_PASS.getOpt());
         this.ssh_key_path = properties.get(SSH_KEY_PATH.getOpt());
 
         this.master_pass = properties.get(MASTER_PASSWORD.getOpt());
