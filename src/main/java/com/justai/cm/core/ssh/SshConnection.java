@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.TeeOutputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.*;
@@ -25,6 +26,7 @@ public class SshConnection {
     private final int port;
     private final String login;
     private final String password;
+    private String sshKeyPath;
     private final boolean noChange;
 
     private Session session;
@@ -35,11 +37,12 @@ public class SshConnection {
     @Getter @Setter
     private boolean active;
 
-    public SshConnection(String addr, int port, String login, String password, boolean noChange) {
+    public SshConnection(String addr, int port, String login, String password, String sshKeyPath, boolean noChange) {
         this.addr = addr;
         this.port = port;
         this.login = login;
         this.password = password;
+        this.sshKeyPath = sshKeyPath;
         this.noChange = noChange;
 
         this.session = openSession();
@@ -198,6 +201,9 @@ public class SshConnection {
             JSch.setConfig("PreferredAuthentications", "publickey,password");
             JSch.setLogger(new JschLogger());
             JSch jsch = new JSch();
+            if (StringUtils.isNotEmpty(sshKeyPath)) {
+                jsch.addIdentity(sshKeyPath);
+            }
             log.debug(
                     "Opening SSH session to {}@{}:{} (auth with password)...",
                     login, addr, port
