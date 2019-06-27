@@ -30,6 +30,7 @@ public class Actions {
         actions.put("start", new Start());
         actions.put("stop", new Stop());
         actions.put("restart", new Restart());
+        actions.put("diff", new Diff());
 
         actions.put("encrypt", new Encrypt());
         actions.put("decrypt", new Decrypt());

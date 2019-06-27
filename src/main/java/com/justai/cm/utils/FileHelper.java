@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.justai.cm.utils.FileUtils;
+
 import static com.justai.cm.utils.ExceptionUtils.wrap;
 
 public class FileHelper {
@@ -64,6 +66,10 @@ public class FileHelper {
 
     public String read() {
         return FileUtils.readFile(file.getAbsolutePath());
+    }
+
+    public List<String> readLines() {
+       return FileUtils.readLines(file.getAbsolutePath());
     }
 
     public void write(String body) {
