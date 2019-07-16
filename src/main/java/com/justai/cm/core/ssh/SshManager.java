@@ -1,7 +1,6 @@
 package com.justai.cm.core.ssh;
 
 import com.justai.cm.core.domain.Host;
-import com.justai.cm.utils.FileHelper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -14,17 +13,20 @@ public class SshManager {
     private final String password;
     private String sshKeyPath;
     private final boolean noChange;
+    private boolean failOnScriptError;
     private final HashMap<String, SshConnection> connections;
 
     public SshManager(
             String user,
             String password,
             String sshKeyPath,
-            boolean noChange) {
+            boolean noChange,
+            boolean failOnScriptError) {
         this.user = user;
         this.password = password;
         this.sshKeyPath = sshKeyPath;
         this.noChange = noChange;
+        this.failOnScriptError = failOnScriptError;
         connections = new HashMap<>();
     }
 
@@ -52,7 +54,7 @@ public class SshManager {
     private synchronized SshConnection getOrCreateConnection(Host host) {
         SshConnection cn = connections.get(host.getFqdn());
         if (cn == null) {
-            cn = new SshConnection(host.getFqdn(), Integer.parseInt(host.getSshPort()), user, password, sshKeyPath, noChange);
+            cn = new SshConnection(host.getFqdn(), Integer.parseInt(host.getSshPort()), user, password, sshKeyPath, noChange, failOnScriptError);
             connections.put(host.getFqdn(), cn);
         }
         return cn;

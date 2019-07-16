@@ -5,7 +5,6 @@ import com.justai.cm.core.actions.Actions;
 import com.justai.cm.core.Components;
 import com.justai.cm.core.actions.BaseAction;
 import com.justai.cm.core.actions.Encryptor;
-import com.justai.cm.core.domain.Cmp;
 import com.justai.cm.core.domain.Env;
 import com.justai.cm.core.ssh.SshManager;
 import org.apache.commons.cli.CommandLine;
@@ -45,7 +44,7 @@ public class CLI {
         Settings settings = parseSettings(commandLine);
         Encryptor.init(settings);
 
-        SshManager sshManager = new SshManager(settings.ssh_user, settings.ssh_pass, settings.ssh_key_path, settings.noChange);
+        SshManager sshManager = new SshManager(settings.ssh_user, settings.ssh_pass, settings.ssh_key_path, settings.noChange, settings.failOnScriptError);
         Components components = Components.load(settings.config_folder + "/Components");
         Env env = EnvLoader.load(settings.config_folder + "/" + settings.env, components);
 
