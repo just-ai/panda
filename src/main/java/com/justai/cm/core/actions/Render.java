@@ -105,7 +105,7 @@ public class Render extends BaseAction {
     }
 
     void renderFile(FileHelper source, TemplateProps props, FileHelper target)  {
-        if (source.name().endsWith(".jks") || source.name().endsWith(".p12")) {
+        if (source.name().endsWith(".jks") || source.name().endsWith(".p12") || source.name().endsWith(".zip")) {
             copyFile(source, target);
         } else {
             renderFile0(source, props, target);
