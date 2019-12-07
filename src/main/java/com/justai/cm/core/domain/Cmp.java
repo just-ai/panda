@@ -3,10 +3,20 @@ package com.justai.cm.core.domain;
 import com.justai.cm.core.Components;
 import com.justai.cm.core.actions.Encryptor;
 import com.justai.cm.utils.FileHelper;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateExceptionHandler;
+import freemarker.template.Version;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,8 +56,38 @@ public class Cmp {
         }
         Encryptor.decryptProps(props);
 
+        renderProps(props, env);
         zProps.putAll(zComponent.getProps());
         zProps.putAll(props);
+    }
+
+    private void renderProps(Map<String, Object> props, Env env) {
+        props.forEach((k,v) -> {
+            if (v instanceof String) {
+                String value = renderProps(env.getProps(), (String) v);
+                props.replace(k, value);
+            }
+            if (v instanceof Map) {
+                renderProps((Map<String, Object>) v, env);
+            }
+        });
+    }
+
+    private String renderProps(Map<String, Object> props, String prop)  {
+        try {
+            Configuration cfg = new Configuration(new Version(2, 3, 28));
+            cfg.setNumberFormat("computer");
+            cfg.setDefaultEncoding("UTF-8");
+            cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+
+            Template template = new Template("test", prop, cfg);
+            StringWriter sw = new StringWriter();
+            template.process(props, sw);
+
+            return sw.toString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private List<Host> getHostsList(Env env, String hostsPattern) {
@@ -89,5 +129,14 @@ public class Cmp {
     public String getFullId() {
         String name = zHost == null ? host : zHost.name;
         return String.format("%s/%s/%s", zEnv.getName(), name, id);
+    }
+
+    @Override
+    public String toString() {
+        return "Cmp{" +
+                "component='" + component + '\'' +
+                ", host='" + host + '\'' +
+                ", id='" + id + '\'' +
+                '}';
     }
 }

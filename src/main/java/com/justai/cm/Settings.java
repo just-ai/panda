@@ -34,6 +34,7 @@ public class Settings {
     public static final Option MASTER_PASSWORD = new Option("master_pass", true, "Password to decrypt secret properties");
     public static final Option MASTER_KEY = new Option("master_key", true, "Key file to decrypt secret properties");
     public static final Option VERBOSE = new Option("v", false, "Enable verbose output");
+    public static final Option FAIL_ON_SCRIPT_ERROR = new Option("f", false, "Fail on error status code");
 
     public static final Options options = new Options();
 
@@ -57,6 +58,7 @@ public class Settings {
         options.addOption(Settings.MASTER_KEY);
 
         options.addOption(Settings.VERBOSE);
+        options.addOption(Settings.FAIL_ON_SCRIPT_ERROR);
     }
 
     public final Map<String, String> props;
@@ -77,6 +79,7 @@ public class Settings {
     public final boolean sudo_with_pass;
     public final String ssh_key_path;
     public final boolean verbose;
+    public final boolean failOnScriptError;
 
     public final String master_pass;
     public final String master_key;
@@ -106,6 +109,7 @@ public class Settings {
         this.master_pass = properties.get(MASTER_PASSWORD.getOpt());
         this.master_key = properties.get(MASTER_KEY.getOpt());
         this.verbose = properties.containsKey(VERBOSE.getOpt());
+        this.failOnScriptError = properties.containsKey(FAIL_ON_SCRIPT_ERROR.getOpt());
     }
 
     private boolean propertyExist(Map<String, String> properties, String property) {

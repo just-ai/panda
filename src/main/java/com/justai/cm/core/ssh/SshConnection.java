@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.*;
-import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +27,7 @@ public class SshConnection {
     private final String password;
     private String sshKeyPath;
     private final boolean noChange;
+    private boolean failOnScriptError;
 
     private Session session;
     private InputStream stdin;
@@ -37,13 +37,14 @@ public class SshConnection {
     @Getter @Setter
     private boolean active;
 
-    public SshConnection(String addr, int port, String login, String password, String sshKeyPath, boolean noChange) {
+    public SshConnection(String addr, int port, String login, String password, String sshKeyPath, boolean noChange, boolean failOnScriptError) {
         this.addr = addr;
         this.port = port;
         this.login = login;
         this.password = password;
         this.sshKeyPath = sshKeyPath;
         this.noChange = noChange;
+        this.failOnScriptError = failOnScriptError;
 
         this.session = openSession();
     }
@@ -65,6 +66,10 @@ public class SshConnection {
 
             int code = wrap(() -> code(channel));
             String msg = wrap(() -> out.toString("UTF-8"));
+
+            if (failOnScriptError && code != 0) {
+                throw new RuntimeException("Remote script failed with status code " + code + " and message " + msg);
+            }
             return Pair.of(code, msg);
         } finally {
             channel.disconnect();
