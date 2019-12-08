@@ -20,6 +20,7 @@ public class Env {
 
     List<Cmp> components;
 
+    List<String> include;
 
     transient FileHelper zFolder;
     transient HashMap<String, Host> zHosts = new HashMap<>();
