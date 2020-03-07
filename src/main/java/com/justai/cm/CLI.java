@@ -17,7 +17,7 @@ public class CLI {
     public static class Test {
         public static void main(String[] args) {
             CLI.main(
-                    "-env stage render mon-server"
+                    "-env prod render router"
                     .split("\\s"));
         }
     }

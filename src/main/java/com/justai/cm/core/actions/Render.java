@@ -4,6 +4,7 @@ import com.justai.cm.core.domain.Cmp;
 import com.justai.cm.core.domain.ConfigMap;
 import com.justai.cm.core.domain.TemplateProps;
 import com.justai.cm.utils.FileHelper;
+import freemarker.cache.FileTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
@@ -11,6 +12,7 @@ import freemarker.template.Version;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
@@ -124,7 +126,7 @@ public class Render extends BaseAction {
         }
 
         String src = source.read();
-        String body = renderTemplate(source.toString(), src, props);
+        String body = renderTemplate(source.toString(), src, props, source.file);
         body = body.replaceAll("\r\n", "\n");
 
         target.write(body);
@@ -136,10 +138,10 @@ public class Render extends BaseAction {
     }
 
     String renderTemplate(String source, TemplateProps props)  {
-        return renderTemplate("string", source, props);
+        return renderTemplate("string", source, props, null);
     }
 
-    String renderTemplate(String name, String source, TemplateProps props)  {
+    String renderTemplate(String name, String source, TemplateProps props, File rootFile)  {
         try {
             Configuration cfg = new Configuration(new Version(2, 3, 28));
             cfg.setNumberFormat("computer");
@@ -148,6 +150,15 @@ public class Render extends BaseAction {
             // Some other recommended settings:
             cfg.setDefaultEncoding("UTF-8");
             cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+            cfg.setClassicCompatible(true);
+
+            if (rootFile != null) {
+                if (rootFile.isDirectory()) {
+                    cfg.setDirectoryForTemplateLoading(rootFile);
+                } else {
+                    cfg.setDirectoryForTemplateLoading(rootFile.getParentFile());
+                }
+            }
 
             Template template = new Template(name, source, cfg);
             StringWriter sw = new StringWriter();
