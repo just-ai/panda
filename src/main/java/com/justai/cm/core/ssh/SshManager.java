@@ -2,6 +2,7 @@ package com.justai.cm.core.ssh;
 
 import com.justai.cm.core.domain.Host;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -54,7 +55,8 @@ public class SshManager {
     private synchronized SshConnection getOrCreateConnection(Host host) {
         SshConnection cn = connections.get(host.getFqdn());
         if (cn == null) {
-            cn = new SshConnection(host.getFqdn(), Integer.parseInt(host.getSshPort()), user, password, sshKeyPath, noChange, failOnScriptError);
+            String addr = StringUtils.isNotEmpty(host.getIp()) ? host.getIp() : host.getFqdn();
+            cn = new SshConnection(addr, Integer.parseInt(host.getSshPort()), user, password, sshKeyPath, noChange, failOnScriptError);
             connections.put(host.getFqdn(), cn);
         }
         return cn;

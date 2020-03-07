@@ -17,7 +17,7 @@ public class CLI {
     public static class Test {
         public static void main(String[] args) {
             CLI.main(
-                    "-env prod render router"
+                    "-env prod pull router"
                     .split("\\s"));
         }
     }
