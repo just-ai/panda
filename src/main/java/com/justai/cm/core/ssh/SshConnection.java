@@ -26,7 +26,7 @@ public class SshConnection {
     private final String login;
     private final String password;
     private String sshKeyPath;
-    private final boolean noChange;
+    protected final boolean noChange;
     private boolean failOnScriptError;
 
     private Session session;
@@ -200,7 +200,7 @@ public class SshConnection {
         return exec.getExitStatus();
     }
 
-    private Session openSession() {
+    protected Session openSession() {
         try {
             JSch.setConfig("StrictHostKeyChecking", "no");
             JSch.setConfig("PreferredAuthentications", "publickey,password");

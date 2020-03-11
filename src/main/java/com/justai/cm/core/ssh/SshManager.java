@@ -56,7 +56,11 @@ public class SshManager {
         SshConnection cn = connections.get(host.getFqdn());
         if (cn == null) {
             String addr = StringUtils.isNotEmpty(host.getIp()) ? host.getIp() : host.getFqdn();
-            cn = new SshConnection(addr, Integer.parseInt(host.getSshPort()), user, password, sshKeyPath, noChange, failOnScriptError);
+            if (addr.equals("localhost") || addr.equals("127.0.0.1")) {
+                cn = new LocalSshConnection(noChange);
+            } else {
+                cn = new SshConnection(addr, Integer.parseInt(host.getSshPort()), user, password, sshKeyPath, noChange, failOnScriptError);
+            }
             connections.put(host.getFqdn(), cn);
         }
         return cn;

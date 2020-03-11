@@ -17,7 +17,7 @@ public class CLI {
     public static class Test {
         public static void main(String[] args) {
             CLI.main(
-                    "-env prod render main_router -host zb01x"
+                    "-env test-caila/local push zenlog -n"
                     .split("\\s"));
         }
     }
