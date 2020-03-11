@@ -36,6 +36,8 @@ public class Settings {
     public static final Option VERBOSE = new Option("v", false, "Enable verbose output");
     public static final Option FAIL_ON_SCRIPT_ERROR = new Option("f", false, "Fail on error status code");
 
+    public static final Option HOST = new Option("host", true, "Host(s) name to apply action");
+
     public static final Options options = new Options();
 
     static {
@@ -59,6 +61,8 @@ public class Settings {
 
         options.addOption(Settings.VERBOSE);
         options.addOption(Settings.FAIL_ON_SCRIPT_ERROR);
+
+        options.addOption(Settings.HOST);
     }
 
     public final Map<String, String> props;
@@ -83,6 +87,8 @@ public class Settings {
 
     public final String master_pass;
     public final String master_key;
+
+    public final Set<String> hosts;
 
     public Settings(CommandLine cmd) {
         this(loadProperties(cmd));
@@ -110,6 +116,13 @@ public class Settings {
         this.master_key = properties.get(MASTER_KEY.getOpt());
         this.verbose = properties.containsKey(VERBOSE.getOpt());
         this.failOnScriptError = properties.containsKey(FAIL_ON_SCRIPT_ERROR.getOpt());
+
+        if (properties.containsKey(HOST.getOpt())) {
+            String[] hosts = properties.get(HOST.getOpt()).split(",");
+            this.hosts = new HashSet<String>(Arrays.asList(hosts));
+        } else {
+            this.hosts = null;
+        }
     }
 
     private boolean propertyExist(Map<String, String> properties, String property) {

@@ -8,6 +8,7 @@ import com.justai.cm.core.domain.Host;
 import com.justai.cm.core.ssh.SshManager;
 import com.justai.cm.utils.FileHelper;
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Console;
 import java.io.StringWriter;
@@ -72,6 +73,12 @@ public abstract class BaseAction {
         }
 
         for (Host h : hosts) {
+            if (settings.hosts != null) {
+                if (!settings.hosts.contains(h.getName())) {
+                    continue;
+                }
+            }
+
             cmp.setZHost(h);
             cmp.setZRenderFolder(env.getZFolder().child("!render").child(h.getName()).child(cmp.getId()));
             cmp.setZPullFolder(env.getZFolder().child("!pull").child(h.getName()).child(cmp.getId()));
