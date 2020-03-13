@@ -12,9 +12,17 @@ public class ExecUtils {
         System.out.println(execToString("cmd /C dir"));
     }
 
+    public static int exec(String[] cmd, ByteArrayOutputStream outputStream) throws IOException {
+        Process p = Runtime.getRuntime().exec(cmd);
+        return exec0(p, outputStream);
+    }
+
     public static int exec(String cmd, ByteArrayOutputStream outputStream) throws IOException {
         Process p = Runtime.getRuntime().exec(cmd);
+        return exec0(p, outputStream);
+    }
 
+    private static int exec0(Process p, ByteArrayOutputStream outputStream) throws IOException {
         Thread _stdout = new Thread(new StreamReader(p.getInputStream(), new TeeOutputStream(outputStream, System.out)));
         Thread _stderr = new Thread(new StreamReader(p.getErrorStream(), new TeeOutputStream(outputStream, System.err)));
 

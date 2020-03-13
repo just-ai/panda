@@ -9,6 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import static com.justai.cm.utils.ExceptionUtils.wrap;
 
@@ -20,8 +21,8 @@ public class LocalSshConnection extends SshConnection {
     }
 
     @Override
-    public Pair<Integer, String> exec(String command) {
-        System.out.println(command);
+    public Pair<Integer, String> exec(String[] command) {
+        System.out.println(Arrays.toString(command));
         if (noChange) {
             return Pair.of(0, "");
         }

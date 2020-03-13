@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
@@ -50,8 +51,13 @@ public class SshConnection {
     }
 
     public Pair<Integer, String> exec(String command) {
+        return exec(command.split(" "));
+    }
+
+    public Pair<Integer, String> exec(String[] command) {
         ChannelExec channel = (ChannelExec) wrap(() -> this.session.openChannel("exec"));
-        System.out.println(command);
+        String cmd = Arrays.stream(command).map(s -> s.contains(" ") ? "'" + s + "'" : s).collect(Collectors.joining(" "));
+        System.out.println(cmd);
         if (noChange) {
             return Pair.of(0, "");
         }
@@ -61,7 +67,7 @@ public class SshConnection {
             channel.setErrStream(new TeeOutputStream(out, System.err), true);
             channel.setOutputStream(new TeeOutputStream(out, System.out), true);
             channel.setInputStream(in, false);
-            channel.setCommand(command);
+            channel.setCommand(cmd);
             wrap(() -> channel.connect());
 
             int code = wrap(() -> code(channel));
