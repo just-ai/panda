@@ -42,7 +42,7 @@ public class Push extends BaseAction {
 
         // set permissions
         sshManager.doWithConnection(cmp.getZHost(), ssh -> {
-            ssh.exec(new String[]{"sh", "-c", "chmod +x `find " + remoteFolder + " -name '*.sh'`"});
+            ssh.exec(new String[]{"sh", "-c", "chmod +x `find " + remoteFolder + " -name \"*.sh\"`"});
         });
 
         // execute config map
