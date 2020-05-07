@@ -215,7 +215,11 @@ public class Render extends BaseAction {
                     }
                 } else {
                     pw.printf("mkdir -p %s\n", target);
-                    pw.printf("cp %s/* %s\n", map.getSource(), target);
+                    // this option is to copy hidden files
+                    pw.printf("shopt -s dotglob\n");
+                    pw.printf("cp -R %s/* %s\n", map.getSource(), target);
+                    pw.printf("shopt -u dotglob\n");
+
                     if (StringUtils.isNotEmpty(map.getUser())) {
                         pw.printf("chown -R %s %s\n", map.getUser(), target);
                     }

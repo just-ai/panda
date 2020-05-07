@@ -122,11 +122,12 @@ public class SshConnection {
 
             channel.mkdir(target.toString());
             for (String f : source.list()) {
-                if (!source.child(f).file.isFile()) {
-                    continue;
+                if (source.child(f).file.isDirectory()) {
+                    pushDirectory(source.child(f), target.child(f));
+                } else {
+                    System.out.println("push " + source.toString().replaceAll(".", " ") + "/" + f + " -> ");
+                    channel.put(source.child(f).stream(), target.child(f).toString());
                 }
-                System.out.println("push " + source.toString().replaceAll(".", " ") + "/" + f + " -> ");
-                channel.put(source.child(f).stream(), target.child(f).toString());
             }
         } catch (SftpException e) {
             System.err.println("Cannot push file: " + e.getMessage());
@@ -176,8 +177,13 @@ public class SshConnection {
             for (String f : files) {
                 System.out.println("pull " + target.toString().replaceAll(".", " ") + " <- " + source + "/" + f);
                 try {
-                    InputStream is = channel.get(source.child(f).toString());
-                    FileUtils.copyInputStreamToFile(is, target.child(f).file);
+                    SftpATTRS res = channel.stat(source.child(f).toString());
+                    if (res.isDir()) {
+                        pullDirectory(source.child(f), target.child(f));
+                    } else {
+                        InputStream is = channel.get(source.child(f).toString());
+                        FileUtils.copyInputStreamToFile(is, target.child(f).file);
+                    }
                 } catch (Exception e) {
                     System.err.println("Cannot pull file: " + e.getMessage());
                 }
