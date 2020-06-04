@@ -193,15 +193,18 @@ public class Render extends BaseAction {
 
             for (ConfigMap map : configMap) {
                 pw.printf("\n# %s\n", map.getSource());
+
+                String target = renderTemplate(map.getTarget(), props);
+
                 if (!configFolder.child(map.getSource()).file.exists()) {
                     if (map.isOptional()) {
+                        pw.printf("rm -f %s\n", target);
                         continue;
                     } else {
                         throw new RuntimeException("Required file does not exists");
                     }
                 }
 
-                String target = renderTemplate(map.getTarget(), props);
                 if (!map.isDirectory()) {
                     if (map.isMkdirs()) {
                         pw.printf("mkdir -p `dirname %s`\n", target);
