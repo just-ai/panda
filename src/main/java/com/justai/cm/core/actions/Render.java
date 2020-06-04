@@ -198,7 +198,9 @@ public class Render extends BaseAction {
 
                 if (!configFolder.child(map.getSource()).file.exists()) {
                     if (map.isOptional()) {
-                        pw.printf("rm -f %s\n", target);
+                        if (!map.isGeneratedByApp()) {
+                            pw.printf("rm -f %s\n", target);
+                        }
                         continue;
                     } else {
                         throw new RuntimeException("Required file does not exists");

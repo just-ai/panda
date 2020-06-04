@@ -1,8 +1,6 @@
 package com.justai.cm.core.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 public class ConfigMap {
@@ -11,6 +9,7 @@ public class ConfigMap {
     String user;
     String mode;
     boolean optional;
+    boolean generatedByApp;
     boolean mkdirs;
     boolean directory;
 }
